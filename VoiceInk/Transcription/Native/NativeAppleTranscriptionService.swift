@@ -48,13 +48,13 @@ class NativeAppleTranscriptionService: TranscriptionService {
             throw ServiceError.invalidModel
         }
         
-        guard #available(, *) else {
+        guard #available(macOS 26, *) else {
             logger.error("SpeechAnalyzer is not available on this macOS version")
             throw ServiceError.unsupportedOS
         }
         
         // Feature gated: SpeechAnalyzer/SpeechTranscriber are future APIs.
-        // Enable by defining ENABLE_NATIVE_SPEECH_ANALYZER in build settings once building against + SDKs.
+        // Enable by defining ENABLE_NATIVE_SPEECH_ANALYZER in build settings once building against macOS 26 + SDKs.
         #if false
         let audioFile = try AVAudioFile(forReading: audioURL)
         let audioDuration = Double(audioFile.length) / audioFile.processingFormat.sampleRate
