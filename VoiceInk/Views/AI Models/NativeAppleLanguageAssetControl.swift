@@ -136,7 +136,7 @@ struct NativeAppleLanguageAssetControl: View {
             return .assetManagementUnavailable
         }
 
-        #if canImport(Speech) && ENABLE_NATIVE_SPEECH_ANALYZER
+        #if false
         let locale = Locale(identifier: localeIdentifier)
         let selectedIdentifier = locale.identifier(.bcp47)
         let supportedIdentifiers = await Set(SpeechTranscriber.supportedLocales.map { $0.identifier(.bcp47) })
@@ -158,7 +158,7 @@ struct NativeAppleLanguageAssetControl: View {
             return .assetManagementUnavailable
         }
 
-        #if canImport(Speech) && ENABLE_NATIVE_SPEECH_ANALYZER
+        #if false
         do {
             let locale = Locale(identifier: localeIdentifier)
             let normalizedIdentifier = locale.identifier(.bcp47)
