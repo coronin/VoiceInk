@@ -48,13 +48,13 @@ class NativeAppleTranscriptionService: TranscriptionService {
             throw ServiceError.invalidModel
         }
         
-        guard #available(macOS 26, *) else {
+        guard #available(, *) else {
             logger.error("SpeechAnalyzer is not available on this macOS version")
             throw ServiceError.unsupportedOS
         }
         
         // Feature gated: SpeechAnalyzer/SpeechTranscriber are future APIs.
-        // Enable by defining ENABLE_NATIVE_SPEECH_ANALYZER in build settings once building against macOS 26+ SDKs.
+        // Enable by defining ENABLE_NATIVE_SPEECH_ANALYZER in build settings once building against + SDKs.
         #if false
         let audioFile = try AVAudioFile(forReading: audioURL)
         let audioDuration = Double(audioFile.length) / audioFile.processingFormat.sampleRate
@@ -138,12 +138,10 @@ class NativeAppleTranscriptionService: TranscriptionService {
         throw ServiceError.unsupportedOS
         #endif
     }
-    
-    
-    
+
+    #if false
     @available(macOS 26, *)
     private func ensureModelIsReserved(for locale: Locale, transcriber: SpeechTranscriber) async {
-        #if false
         let localeIdentifier = locale.identifier(.bcp47)
         let reservedLocales = await AssetInventory.reservedLocales
         guard !reservedLocales.contains(where: { $0.identifier(.bcp47) == localeIdentifier }) else {
@@ -166,8 +164,8 @@ class NativeAppleTranscriptionService: TranscriptionService {
             let finalStatus = await AssetInventory.status(forModules: [transcriber])
             logger.warning("Apple Speech asset reservation failed for '\(localeIdentifier, privacy: .public)': \(error.localizedDescription, privacy: .public). Continuing because the locale is already downloaded. Status: \(String(describing: finalStatus), privacy: .public).")
         }
-        #endif
     }
+    #endif
 
     private func waitForResultStream(
         _ resultTask: Task<String, Error>,
