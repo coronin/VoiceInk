@@ -55,7 +55,7 @@ class NativeAppleTranscriptionService: TranscriptionService {
         
         // Feature gated: SpeechAnalyzer/SpeechTranscriber are future APIs.
         // Enable by defining ENABLE_NATIVE_SPEECH_ANALYZER in build settings once building against macOS 26+ SDKs.
-        #if canImport(Speech) && ENABLE_NATIVE_SPEECH_ANALYZER
+        #if false
         let audioFile = try AVAudioFile(forReading: audioURL)
         let audioDuration = Double(audioFile.length) / audioFile.processingFormat.sampleRate
         
@@ -143,7 +143,7 @@ class NativeAppleTranscriptionService: TranscriptionService {
     
     @available(macOS 26, *)
     private func ensureModelIsReserved(for locale: Locale, transcriber: SpeechTranscriber) async {
-        #if canImport(Speech) && ENABLE_NATIVE_SPEECH_ANALYZER
+        #if false
         let localeIdentifier = locale.identifier(.bcp47)
         let reservedLocales = await AssetInventory.reservedLocales
         guard !reservedLocales.contains(where: { $0.identifier(.bcp47) == localeIdentifier }) else {
