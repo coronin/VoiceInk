@@ -64,12 +64,14 @@ class RecordingShortcutManager: ObservableObject {
         case toggle = "toggle"
         case pushToTalk = "pushToTalk"
         case hybrid = "hybrid"
+        case doublePress = "doublePress"  // 新增
 
         var displayName: String {
             switch self {
             case .toggle: return "Toggle"
             case .pushToTalk: return "Push to Talk"
             case .hybrid: return "Hybrid"
+            case .doublePress: return "Double Press"  // UI 里显示这个
             }
         }
     }
