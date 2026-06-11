@@ -364,6 +364,9 @@ final class RecordingShortcutModeHandler {
     private let shortcutPressCooldown: TimeInterval = 0.5
     private let hybridPressThreshold: TimeInterval = 0.5
 
+    private var doublePressTimeoutTask: Task<Void, Never>?
+    private let doublePressThreshold: TimeInterval = 0.3  // 300ms 内算双击
+
     init(
         logger: Logger,
         canHandleShortcutAction: @escaping @MainActor () -> Bool,
@@ -387,6 +390,8 @@ final class RecordingShortcutModeHandler {
         activeRecordingShortcutAction = nil
         interruptedRecordingActions.removeAll()
         activeShortcutCanCancelAccidentalStart = false
+        doublePressTimeoutTask?.cancel()  // 新增
+        doublePressTimeoutTask = nil      // 新增
     }
 
     func handleKeyDown(
@@ -399,6 +404,17 @@ final class RecordingShortcutModeHandler {
             return
         }
 
+    // 新增：Double-press 第二次按键检测
+    if mode == .doublePress && doublePressTimeoutTask != nil {
+        // 300ms 内再次按下，确认双击
+        doublePressTimeoutTask?.cancel()
+        doublePressTimeoutTask = nil
+        guard canHandleShortcutAction() else { return }
+        await toggleRecorderPanel(modeId)
+        return
+    }
+
+    // 原有 cooldown 逻辑（防止连击）
         if let lastTrigger = lastShortcutPressTime,
            Date().timeIntervalSince(lastTrigger) < shortcutPressCooldown {
             return
@@ -432,6 +448,15 @@ final class RecordingShortcutModeHandler {
                 guard canHandleShortcutAction() else { return }
                 logger.notice("handleShortcutKeyDown: starting recording (push-to-talk key down)")
                 await toggleMiniRecorder(powerModeId)
+            }
+
+        case .doublePress:  // 新增
+        // 第一次按键，启动超时计时器
+        doublePressTimeoutTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(0.3 * Double(NSEC_PER_SEC)))
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                self?.doublePressTimeoutTask = nil
             }
         }
     }
@@ -467,6 +492,10 @@ final class RecordingShortcutModeHandler {
             } else {
                 isHandsFreeRecording = true
             }
+
+        case .doublePress:  // 新增
+        // 第二次 keyDown 已经触发 toggle，keyUp 不需要做任何事
+            break
         }
 
         shortcutPressStartTime = nil
