@@ -410,7 +410,7 @@ final class RecordingShortcutModeHandler {
         doublePressTimeoutTask?.cancel()
         doublePressTimeoutTask = nil
         guard canHandleShortcutAction() else { return }
-        await toggleRecorderPanel(modeId)
+        await toggleMiniRecorder(powerModeId)
         return
     }
 
@@ -459,7 +459,7 @@ final class RecordingShortcutModeHandler {
                 self?.doublePressTimeoutTask = nil
             }
         }
-    }
+    } }}
 
     func handleKeyUp(
         action: ShortcutAction,
