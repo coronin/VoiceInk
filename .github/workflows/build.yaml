@@ -1,5 +1,4 @@
-name: Build macOS v1.79
-
+name: Build macOS 15
 on:
   workflow_dispatch:  # 手动触发
 
